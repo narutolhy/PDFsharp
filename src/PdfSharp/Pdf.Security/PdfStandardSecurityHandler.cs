@@ -236,8 +236,8 @@ namespace PdfSharp.Pdf.Security
             // We can handle 40 and 128 bit standard encryption.
             string filter = Elements.GetName(PdfSecurityHandler.Keys.Filter);
             int v = Elements.GetInteger(PdfSecurityHandler.Keys.V);
-            if (filter != "/Standard" || !(v >= 1 && v <= 3))
-                throw new PdfReaderException(PSSR.UnknownEncryption);
+            //if (filter != "/Standard" || !(v >= 1 && v <= 4))
+            //    throw new PdfReaderException(PSSR.UnknownEncryption);
 
             byte[] documentID = PdfEncoders.RawEncoding.GetBytes(Owner.Internals.FirstDocumentID);
             byte[] oValue = PdfEncoders.RawEncoding.GetBytes(Elements.GetString(Keys.O));
