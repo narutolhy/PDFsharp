@@ -315,8 +315,7 @@ namespace PdfSharp.Pdf.IO
                     TryAgain:
                     PasswordValidity validity = securityHandler.ValidatePassword(password);
                     var test = securityHandler._encryptionKey;
-                    File.WriteAllBytes(@"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testKey.txt", test);
-                    return new PdfDocument();
+                   
                     if (validity == PasswordValidity.Invalid)
                     {
                         if (passwordProvider != null)
@@ -378,6 +377,7 @@ namespace PdfSharp.Pdf.IO
                             // Is type xref to compressed object?
                             if (item.Type == 2)
                             {
+
                                 //PdfReference irefNew = parser.ReadCompressedObject(new PdfObjectID((int)item.Field2), (int)item.Field3);
                                 //document._irefTable.Add(irefNew);
                                 int objectNumber = (int)item.Field2;
