@@ -314,6 +314,9 @@ namespace PdfSharp.Pdf.IO
                     PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
                     TryAgain:
                     PasswordValidity validity = securityHandler.ValidatePassword(password);
+                    var test = securityHandler._encryptionKey;
+                    File.WriteAllBytes(@"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testKey.txt", test);
+                    return new PdfDocument();
                     if (validity == PasswordValidity.Invalid)
                     {
                         if (passwordProvider != null)
@@ -327,10 +330,10 @@ namespace PdfSharp.Pdf.IO
                         }
                         else
                         {
-                            if (password == null)
-                                throw new PdfReaderException(PSSR.PasswordRequired);
-                            else
-                                throw new PdfReaderException(PSSR.InvalidPassword);
+                            //if (password == null)
+                            //    //throw new PdfReaderException(PSSR.PasswordRequired);
+                            //else
+                            //    throw new PdfReaderException(PSSR.InvalidPassword);
                         }
                     }
                     else if (validity == PasswordValidity.UserPassword && openmode == PdfDocumentOpenMode.Modify)
@@ -347,6 +350,7 @@ namespace PdfSharp.Pdf.IO
                         else
                             throw new PdfReaderException(PSSR.OwnerPasswordRequired);
                     }
+                    
                 }
                 else
                 {

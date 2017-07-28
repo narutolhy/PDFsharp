@@ -248,7 +248,7 @@ namespace PdfSharp.Pdf.Security
             if (inputPassword == null)
                 inputPassword = "";
 
-            bool strongEncryption = rValue == 3;
+            bool strongEncryption = rValue == 4;
             int keyLength = strongEncryption ? 16 : 32;
 
             // Try owner password first.
@@ -612,7 +612,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// The global encryption key.
         /// </summary>
-        byte[] _encryptionKey;
+        public byte[] _encryptionKey;
 
 #if !SILVERLIGHT && !UWP
         /// <summary>
