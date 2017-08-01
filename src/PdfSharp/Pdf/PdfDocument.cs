@@ -543,6 +543,9 @@ namespace PdfSharp.Pdf
         }
         internal int _version;
 
+        public int revision;
+
+
         /// <summary>
         /// Gets the number of pages in the document.
         /// </summary>

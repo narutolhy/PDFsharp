@@ -19,14 +19,17 @@ namespace ConsoleApplication1 {
     class Program {
         static void Main(string[] args) {
             string filePathKey = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testKey.txt";
-            string filePath = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\test4.pdf";
+            string filePath = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\test10.pdf";
             string filePathDeco = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testDecode.txt";
             PdfDocument document = PdfReader.Open(filePath, PdfDocumentOpenMode.ReadOnly);
             var page = document.Pages;
-            var test = page[2].Elements.GetDictionary("/Contents");
-            var test2 = test.Stream;
-            Console.WriteLine(test2.ToString());
-            Console.WriteLine(test.ToString());
+            var test = page[0].Contents.CreateSingleContent();
+            //PdfContent content = page.Contents.CreateSingleContent();
+            byte[] bytes = test.Stream.Value;
+            Console.WriteLine(Encoding.ASCII.GetString(bytes));
+            //var test2 = test.Stream;
+            //Console.WriteLine(test2.ToString());
+            //Console.WriteLine(test.ToString());
             byte[] key = File.ReadAllBytes(filePathKey);
             //byte[] res = ZLibCompressor.DeCompress(testzip);
             byte[] decrpt = new byte[25];

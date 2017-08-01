@@ -288,14 +288,20 @@ namespace PdfSharp.Pdf.IO
                     }
                 End: ;
                 }
-#endif
-                PdfStandardSecurityHandler securityHandler = _document.SecurityHandler;
-                securityHandler.SetHashKey(objectID);
-                if(bytes.Length != 0) {
-                    byte[] key = new byte[securityHandler._keySize];
-                    Array.Copy(securityHandler._key, 0, key, 0, securityHandler._keySize);
-                    bytes = securityHandler.Decrypt(bytes, key);
+#endif          
+                if(_document.revision != 0) {
+                    PdfStandardSecurityHandler securityHandler = _document.SecurityHandler;
+
+                    securityHandler.SetHashKey(objectID);
+                    if(bytes.Length != 0) {
+                        byte[] key = new byte[securityHandler._keySize];
+                        Array.Copy(securityHandler._key, 0, key, 0, securityHandler._keySize);
+                        bytes = securityHandler.Decrypt(bytes, key);
+                    }
                 }
+               
+                
+              
                 PdfDictionary.PdfStream stream = new PdfDictionary.PdfStream(bytes, dict);
                 dict.Stream = stream;
                 ReadSymbol(Symbol.EndStream);

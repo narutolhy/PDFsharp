@@ -306,9 +306,10 @@ namespace PdfSharp.Pdf.IO
                 PdfReference xrefEncrypt = document._trailer.Elements[PdfTrailer.Keys.Encrypt] as PdfReference;
                 if (xrefEncrypt != null)
                 {
+                    document.revision = 1;
                     //xrefEncrypt.Value = parser.ReadObject(null, xrefEncrypt.ObjectID, false);
                     PdfObject encrypt = parser.ReadObject(null, xrefEncrypt.ObjectID, false, false);
-
+                    Ele
                     encrypt.Reference = xrefEncrypt;
                     xrefEncrypt.Value = encrypt;
                     PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
@@ -355,6 +356,7 @@ namespace PdfSharp.Pdf.IO
                 }
                 else
                 {
+                    document.revision = 0;
                     if (password != null)
                     {
                         // Password specified but document is not encrypted.
@@ -476,7 +478,8 @@ namespace PdfSharp.Pdf.IO
 
 
                 // Fix references of trailer values and then objects and irefs are consistent.
-                document._trailer.Finish();
+                //if(document.revision == 0)
+                    document._trailer.Finish();
 
 #if DEBUG_
     // Some tests...
