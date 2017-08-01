@@ -314,8 +314,10 @@ namespace PdfSharp.Pdf.IO
                     PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
                     TryAgain:
                     PasswordValidity validity = securityHandler.ValidatePassword(password);
-                    var test = securityHandler._encryptionKey;
-                   
+
+                    //securityHandler.DecryptDocument();
+
+
                     if (validity == PasswordValidity.Invalid)
                     {
                         if (passwordProvider != null)
@@ -385,6 +387,13 @@ namespace PdfSharp.Pdf.IO
                                 {
                                     objectStreams.Add(objectNumber, null);
                                     PdfObjectID objectID = new PdfObjectID((int)item.Field2);
+                                    //if(xrefEncrypt != null) {
+
+                                    //    PdfObject pdfObject = parser.ReadObject(null, objectID, false, false);
+                                    //    PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
+                                    //    securityHandler.DecryptObject(pdfObject);
+                                    //}
+
                                     parser.ReadIRefsFromCompressedObject(objectID);
                                 }
                             }
@@ -392,8 +401,10 @@ namespace PdfSharp.Pdf.IO
                     }
                 }
 
+
+
                 // 4th: Read compressed objects.
-                for (int idx = 0; idx < count2; idx++)
+                for(int idx = 0; idx < count2; idx++)
                 {
                     PdfReference iref = irefs2[idx];
                     PdfCrossReferenceStream xrefStream = iref.Value as PdfCrossReferenceStream;
@@ -418,6 +429,7 @@ namespace PdfSharp.Pdf.IO
                 PdfReference[] irefs = document._irefTable.AllReferences;
                 int count = irefs.Length;
 
+
                 // Read all indirect objects.
                 for (int idx = 0; idx < count; idx++)
                 {
@@ -432,6 +444,13 @@ namespace PdfSharp.Pdf.IO
                         {
                             Debug.Assert(document._irefTable.Contains(iref.ObjectID));
                             PdfObject pdfObject = parser.ReadObject(null, iref.ObjectID, false, false);
+    
+                            //if(xrefEncrypt != null) {
+                            //    PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
+                            //    securityHandler.DecryptObject(pdfObject);
+                            //}
+             
+                            //pdfObject = parser.ReadObject(null, iref.ObjectID, false, false);
                             Debug.Assert(pdfObject.Reference == iref);
                             pdfObject.Reference = iref;
                             Debug.Assert(pdfObject.Reference.Value != null, "Something went wrong.");
@@ -454,10 +473,7 @@ namespace PdfSharp.Pdf.IO
                 }
 
                 // Encrypt all objects.
-                if (xrefEncrypt != null)
-                {
-                    document.SecurityHandler.EncryptDocument();
-                }
+
 
                 // Fix references of trailer values and then objects and irefs are consistent.
                 document._trailer.Finish();

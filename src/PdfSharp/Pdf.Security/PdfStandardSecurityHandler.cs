@@ -30,6 +30,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf.Advanced;
@@ -43,6 +45,8 @@ using System.Security.Cryptography;
 
 namespace PdfSharp.Pdf.Security
 {
+    
+
     /// <summary>
     /// Represents the standard PDF security handler.
     /// </summary>
@@ -103,6 +107,131 @@ namespace PdfSharp.Pdf.Security
             set { Elements.SetInteger(Keys.P, (int)value); }
         }
 
+        public void DecryptDocument() {
+            foreach(PdfReference iref in _document._irefTable.AllReferences) {
+                if(!ReferenceEquals(iref.Value, this))
+                    DecryptObject(iref.Value);
+            }
+        }
+
+        public void DecryptObject(PdfObject value) {
+            Debug.Assert(value.Reference != null);
+
+            SetHashKey(value.ObjectID);
+#if DEBUG
+            if(value.ObjectID.ObjectNumber == 10)
+                GetType();
+#endif
+
+            PdfDictionary dict;
+            PdfArray array;
+            PdfStringObject str;
+            if((dict = value as PdfDictionary) != null)
+                DecryptDictionary(dict);
+            else if((array = value as PdfArray) != null)
+                DecryptArray(array);
+            else if((str = value as PdfStringObject) != null) {
+                //if(str.Length != 0) {
+                //    byte[] bytes = str.EncryptionValue;
+                //    byte[] key = new byte[_keySize];
+                //    Array.Copy(_key, 0, key, 0, _keySize);
+                //    str.EncryptionValue = Decrypt(bytes, key); 
+                //}
+            }
+        }
+
+        void DecryptDictionary(PdfDictionary dict) {
+            PdfName[] names = dict.Elements.KeyNames;
+            foreach(KeyValuePair<string, PdfItem> item in dict.Elements) {
+                PdfString value1;
+                PdfDictionary value2;
+                PdfArray value3;
+                if((value1 = item.Value as PdfString) != null)
+                    DecryptString(value1);
+                else if((value2 = item.Value as PdfDictionary) != null)
+                    DecryptDictionary(value2);
+                else if((value3 = item.Value as PdfArray) != null)
+                    DecryptArray(value3);
+            }
+            if(dict.Stream != null) {
+                byte[] bytes = dict.Stream.Value;
+                if(bytes.Length != 0) {
+                    byte[] key = new byte[_keySize];
+                    Array.Copy(_key, 0, key, 0, _keySize);
+                    dict.Stream.Value = Decrypt(bytes, key);
+                }
+            }
+        }
+
+        void DecryptArray(PdfArray array) {
+            int count = array.Elements.Count;
+            for(int idx = 0; idx < count; idx++) {
+                PdfItem item = array.Elements[idx];
+                PdfString value1;
+                PdfDictionary value2;
+                PdfArray value3;
+                if((value1 = item as PdfString) != null)
+                    DecryptString(value1);
+                else if((value2 = item as PdfDictionary) != null)
+                    DecryptDictionary(value2);
+                else if((value3 = item as PdfArray) != null)
+                    DecryptArray(value3);
+            }
+        }
+
+        void DecryptString(PdfString value) {
+            //if(value.Length != 0) {
+            //    byte[] bytes = value.EncryptionValue;
+            //    byte[] key = new byte[_keySize];
+            //    Array.Copy(_key, 0, key, 0, _keySize);
+            //    value.EncryptionValue = Decrypt(bytes, key);
+            //}
+        }
+
+        public byte[] Decrypt(byte[] originalStream, byte[] key) {
+            _md5.Initialize();
+            _md5.TransformFinalBlock(key, 0, key.Length);
+            byte[] DecKey = _md5.Hash;
+
+            byte[] iv = new byte[16];
+            byte[] buff = new byte[originalStream.Length - 16];
+            Array.Copy(originalStream, 0, iv, 0, 16);
+            Array.Copy(originalStream, 16, buff, 0, buff.Length);
+            Aes myAes = Aes.Create();
+            myAes.Key = key;
+            myAes.IV = iv;
+
+            byte[] stream = new byte[0];
+            int streamSize = 0;
+            ICryptoTransform decryptor = myAes.CreateDecryptor(myAes.Key, myAes.IV);
+            using(MemoryStream msDecrypt = new MemoryStream(buff)) {
+                using(CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read)) {
+                    using(var reader = new BinaryReader(csDecrypt)) {
+                        byte[] tmp = reader.ReadBytes(256);
+                        while(tmp.Length > 0) {
+                            streamSize += tmp.Length;
+                            byte[] streamBuff = new byte[streamSize];
+                            if(stream.Length > 0)
+                                Array.Copy(stream, 0, streamBuff, 0, stream.Length);
+                            Array.Copy(tmp, 0, streamBuff, stream.Length, tmp.Length);
+                            stream = new byte[streamSize];
+                            Array.Copy(streamBuff, 0, stream, 0, streamSize);
+                            tmp = reader.ReadBytes(256);
+                        }
+
+                    }
+
+                }
+            }
+            //if (version == 1)
+            //    unzipStream = MyAES.Aes.Decrypt(buff, DecKey, MyAES.Aes.Mode.CBC, iv, MyAES.Aes.Padding.PKCS7);
+            //else
+            //    unzipStream = new byte[20];
+            //byte[] streams = ZLibCompressor.DeCompress(stream);
+            //Console.WriteLine(Encoding.ASCII.GetString(stream));
+            return stream;
+        }
+
         /// <summary>
         /// Encrypts the whole document.
         /// </summary>
@@ -114,6 +243,7 @@ namespace PdfSharp.Pdf.Security
                     EncryptObject(iref.Value);
             }
         }
+
 
         /// <summary>
         /// Encrypts an indirect object.
@@ -525,10 +655,11 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// Set the hash key for the specified object.
         /// </summary>
-        internal void SetHashKey(PdfObjectID id)
+        public void SetHashKey(PdfObjectID id)
         {
 #if !NETFX_CORE
             //#if !SILVERLIGHT
+
             byte[] objectId = new byte[5];
             _md5.Initialize();
             // Split the object number and generation
@@ -538,7 +669,9 @@ namespace PdfSharp.Pdf.Security
             objectId[3] = (byte)id.GenerationNumber;
             objectId[4] = (byte)(id.GenerationNumber >> 8);
             _md5.TransformBlock(_encryptionKey, 0, _encryptionKey.Length, _encryptionKey, 0);
-            _md5.TransformFinalBlock(objectId, 0, objectId.Length);
+            _md5.TransformBlock(objectId, 0, objectId.Length, objectId, 0);
+            _md5.TransformFinalBlock(salt, 0, salt.Length);
+
             _key = _md5.Hash;
             _md5.Initialize();
             _keySize = _encryptionKey.Length + 5;
@@ -646,13 +779,16 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// The encryption key for a particular object/generation.
         /// </summary>
-        byte[] _key;
+        public byte[] _key;
 
         /// <summary>
         /// The encryption key length for a particular object/generation.
         /// </summary>
-        int _keySize;
+        public int _keySize;
 
+        int revision;
+
+        byte[] salt = { (byte)0x73, (byte)0x41, (byte)0x6c, (byte)0x54 };
         #endregion
 
         internal override void WriteObject(PdfWriter writer)

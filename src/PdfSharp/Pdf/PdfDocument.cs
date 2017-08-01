@@ -52,6 +52,7 @@ namespace PdfSharp.Pdf
         internal DocumentState _state;
         internal PdfDocumentOpenMode _openMode;
 
+
 #if DEBUG_
         static PdfDocument()
         {

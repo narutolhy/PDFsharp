@@ -1573,6 +1573,7 @@ namespace PdfSharp.Pdf
             internal PdfStream(byte[] value, PdfDictionary owner)
                 : this(owner)
             {
+
                 _value = value;
             }
 
@@ -1731,6 +1732,7 @@ namespace PdfSharp.Pdf
             {
                 if (_value != null)
                 {
+                    
                     PdfItem filter = _ownerDictionary.Elements["/Filter"];
                     if (filter != null)
                     {

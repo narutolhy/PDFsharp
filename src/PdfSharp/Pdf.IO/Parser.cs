@@ -31,9 +31,11 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using PdfSharp.Internal;
 using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.Internal;
+using PdfSharp.Pdf.Security;
 
 namespace PdfSharp.Pdf.IO
 {
@@ -287,6 +289,13 @@ namespace PdfSharp.Pdf.IO
                 End: ;
                 }
 #endif
+                PdfStandardSecurityHandler securityHandler = _document.SecurityHandler;
+                securityHandler.SetHashKey(objectID);
+                if(bytes.Length != 0) {
+                    byte[] key = new byte[securityHandler._keySize];
+                    Array.Copy(securityHandler._key, 0, key, 0, securityHandler._keySize);
+                    bytes = securityHandler.Decrypt(bytes, key);
+                }
                 PdfDictionary.PdfStream stream = new PdfDictionary.PdfStream(bytes, dict);
                 dict.Stream = stream;
                 ReadSymbol(Symbol.EndStream);
@@ -904,8 +913,11 @@ namespace PdfSharp.Pdf.IO
                 try
                 {
                     Debug.Assert(_document._irefTable.Contains(iref.ObjectID));
+               
                     PdfDictionary pdfObject = (PdfDictionary)ReadObject(null, iref.ObjectID, false, false);
+                   
                     PdfObjectStream objectStream = new PdfObjectStream(pdfObject);
+                   
                     Debug.Assert(objectStream.Reference == iref);
                     // objectStream.Reference = iref; Superfluous, see Assert in line before.
                     Debug.Assert(objectStream.Reference.Value != null, "Something went wrong.");

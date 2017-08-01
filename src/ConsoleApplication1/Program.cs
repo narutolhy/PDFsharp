@@ -18,10 +18,15 @@ using System.Security.Cryptography;
 namespace ConsoleApplication1 {
     class Program {
         static void Main(string[] args) {
-            string filePathKey = @"testKey.txt";
-            string filePath = @"test4.pdf";
-            string filePathDeco = @"testDecode.txt";
-            //PdfDocument document = PdfReader.Open(filePath, PdfDocumentOpenMode.ReadOnly);
+            string filePathKey = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testKey.txt";
+            string filePath = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\test4.pdf";
+            string filePathDeco = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testDecode.txt";
+            PdfDocument document = PdfReader.Open(filePath, PdfDocumentOpenMode.ReadOnly);
+            var page = document.Pages;
+            var test = page[2].Elements.GetDictionary("/Contents");
+            var test2 = test.Stream;
+            Console.WriteLine(test2.ToString());
+            Console.WriteLine(test.ToString());
             byte[] key = File.ReadAllBytes(filePathKey);
             //byte[] res = ZLibCompressor.DeCompress(testzip);
             byte[] decrpt = new byte[25];
@@ -47,7 +52,6 @@ namespace ConsoleApplication1 {
             byte[] buff = new byte[decrp.Length - 16];
             Array.Copy(decrp, 0, iv, 0, 16);
             Array.Copy(decrp, 16, buff, 0, buff.Length);
-            string plaintext = null;
             Aes myAes = Aes.Create();
             myAes.Key = testHash;
             myAes.IV = iv;
