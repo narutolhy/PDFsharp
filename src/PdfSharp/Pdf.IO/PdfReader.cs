@@ -309,7 +309,7 @@ namespace PdfSharp.Pdf.IO
                     document.revision = 1;
                     //xrefEncrypt.Value = parser.ReadObject(null, xrefEncrypt.ObjectID, false);
                     PdfObject encrypt = parser.ReadObject(null, xrefEncrypt.ObjectID, false, false);
-                    Ele
+
                     encrypt.Reference = xrefEncrypt;
                     xrefEncrypt.Value = encrypt;
                     PdfStandardSecurityHandler securityHandler = document.SecurityHandler;

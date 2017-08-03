@@ -34,8 +34,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Ocr">
+      <HintPath>..\..\..\..\..\workspace\JixiProject\JixiProject\JixiSDK\OCR_SDK\Microsoft.Ocr.dll</HintPath>
+    </Reference>
+    <Reference Include="PDFSharp.Extensions">
+      <HintPath>..\..\..\..\..\workspace\JixiProject\JixiProject\JixiSDK\PDFSharp.Extensions-master\bin\Debug\PDFSharp.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,6 +66,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Documents\Visual Studio 2015\Projects\pdfRead\pdfRead\pdfRead.csproj">
+      <Project>{5f889d13-5d64-41fd-8f26-15f09a26d26f}</Project>
+      <Name>pdfRead</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\workspace\JixiProject\JixiProject\JixiSDK\PdfExtractor\PdfExtractor.csproj">
+      <Project>{89a9d3ba-db8d-462d-a26d-079417a0c612}</Project>
+      <Name>PdfExtractor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PdfSharp\PDFsharp.csproj">
       <Project>{5a6055bc-bf86-4fdd-9f62-0109db7a303b}</Project>
       <Name>PDFsharp</Name>

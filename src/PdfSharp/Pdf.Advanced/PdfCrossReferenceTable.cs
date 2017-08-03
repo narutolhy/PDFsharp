@@ -39,7 +39,7 @@ namespace PdfSharp.Pdf.Advanced
     /// Represents the cross-reference table of a PDF document. 
     /// It contains all indirect objects of a document.
     /// </summary>
-    internal sealed class PdfCrossReferenceTable  // Must not be derive from PdfObject.
+    public class PdfCrossReferenceTable  // Must not be derive from PdfObject.
     {
         public PdfCrossReferenceTable(PdfDocument document)
         {
@@ -188,7 +188,7 @@ namespace PdfSharp.Pdf.Advanced
         /// <summary>
         /// Gets an array of all cross references ordered ascendingly by their object identifier.
         /// </summary>
-        internal PdfReference[] AllReferences
+       public PdfReference[] AllReferences
         {
             get
             {

@@ -366,9 +366,28 @@ namespace PdfSharp.Pdf.Security
             // We can handle 40 and 128 bit standard encryption.
             string filter = Elements.GetName(PdfSecurityHandler.Keys.Filter);
             int v = Elements.GetInteger(PdfSecurityHandler.Keys.V);
+
+            if(v == 1)
+                _document.revision = 3;
+            else if(v == 2 || v == 3) {
+                int? length = Elements.GetInteger(PdfSecurityHandler.Keys.Length);
+                if(length != null) {
+                    _keySize = (int)length / 8;
+                }
+                var test = Elements.GetInteger(PdfSecurityHandler.Keys.CF);
+            } else if(v == 4) {
+                var Cf = (PdfDictionary)Elements.GetObject(PdfSecurityHandler.Keys.CF);
+                var StdCf = (PdfDictionary)Cf.Elements.GetObject(PdfSecurityHandler.Keys.StdCf);
+                var decryptAlgorithm = StdCf._elements[PdfSecurityHandler.Keys.Cfm];
+                if(decryptAlgorithm.ToString() == "/AESV2") {
+                    _document.revision = 1;
+                } else {
+                    _document.revision = 3;
+                }
+            }
             //if (filter != "/Standard" || !(v >= 1 && v <= 4))
             //    throw new PdfReaderException(PSSR.UnknownEncryption);
-
+            
             byte[] documentID = PdfEncoders.RawEncoding.GetBytes(Owner.Internals.FirstDocumentID);
             byte[] oValue = PdfEncoders.RawEncoding.GetBytes(Elements.GetString(Keys.O));
             byte[] uValue = PdfEncoders.RawEncoding.GetBytes(Elements.GetString(Keys.U));
@@ -378,7 +397,7 @@ namespace PdfSharp.Pdf.Security
             if (inputPassword == null)
                 inputPassword = "";
 
-            bool strongEncryption = rValue == 4;
+            bool strongEncryption = rValue == 4 || rValue == 3;
             int keyLength = strongEncryption ? 16 : 32;
 
             // Try owner password first.
@@ -670,8 +689,10 @@ namespace PdfSharp.Pdf.Security
             objectId[4] = (byte)(id.GenerationNumber >> 8);
             _md5.TransformBlock(_encryptionKey, 0, _encryptionKey.Length, _encryptionKey, 0);
             _md5.TransformBlock(objectId, 0, objectId.Length, objectId, 0);
-            _md5.TransformFinalBlock(salt, 0, salt.Length);
-
+            if(_document.revision == 1)
+                _md5.TransformFinalBlock(salt, 0, salt.Length);
+            else
+                _md5.TransformFinalBlock(salt, 0, 0);
             _key = _md5.Hash;
             _md5.Initialize();
             _keySize = _encryptionKey.Length + 5;

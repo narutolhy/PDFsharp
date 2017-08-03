@@ -132,6 +132,13 @@ namespace PdfSharp.Pdf.Security
             /// </summary>
             [KeyInfo("1.6", KeyType.Name | KeyType.Optional)]
             public const string EFF = "/EFF";
+
+            [KeyInfo("1.6", KeyType.Name | KeyType.Optional)]
+            public const string StdCf = "/StdCF";
+
+
+            [KeyInfo("1.6", KeyType.Name | KeyType.Optional)]
+            public const string Cfm = "/CFM";
         }
     }
 }

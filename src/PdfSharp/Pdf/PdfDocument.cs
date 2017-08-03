@@ -546,6 +546,11 @@ namespace PdfSharp.Pdf
         public int revision;
 
 
+        public const int AES_128 = 1;
+        public const int AES_256 = 2;
+        public const int STANDARD_ENCRYPTION_40 = 3;
+        public const int STANDARD_ENCRYPTION_128 = 4;
+
         /// <summary>
         /// Gets the number of pages in the document.
         /// </summary>
@@ -858,7 +863,7 @@ namespace PdfSharp.Pdf
         }
 
         internal PdfTrailer _trailer;
-        internal PdfCrossReferenceTable _irefTable;
+        public PdfCrossReferenceTable _irefTable;
         internal Stream _outStream;
 
         // Imported Document
