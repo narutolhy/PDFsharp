@@ -26,16 +26,16 @@ namespace ConsoleApplication1 {
     class Program {
         static void Main(string[] args) {
             //string filePathKey = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testKey.txt";
-            string filePath = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\test5.pdf";
+            string filePath = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\test4.pdf";
             //string filePathDeco = @"C:\Users\t-holu\Documents\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\data\testDecode.txt";
 
             byte[] fileIn = FileToByteArray(filePath);
             PdfDocument doc = new PdfDocument(fileIn);
             //var test2 = doc.ExtractPageImages(2);
-            //var test = doc.ExtractImages();
+            var test = doc.ExtractImages();
             List<PdfTextLine> textLines;
-            //for(int i = 0; i < doc.pages.Count; i++)
-            textLines = doc.PageTextLine(2);
+            for(int i = 0; i < doc.pages.Count; i++)
+                textLines = doc.PageTextLine(0);
             var t = doc.lineFontSize;
             foreach(var i in t) {
                 Console.WriteLine(i.Key + "    hello world");
