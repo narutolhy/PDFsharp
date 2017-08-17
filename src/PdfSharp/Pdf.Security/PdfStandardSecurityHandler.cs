@@ -382,7 +382,7 @@ namespace PdfSharp.Pdf.Security
                 if(decryptAlgorithm.ToString() == "/AESV2") {
                     _document.revision = 1;
                 } else {
-                    _document.revision = 3;
+                    _document.revision = 4;
                 }
             }
             //if (filter != "/Standard" || !(v >= 1 && v <= 4))

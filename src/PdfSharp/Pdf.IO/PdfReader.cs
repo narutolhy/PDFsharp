@@ -372,6 +372,7 @@ namespace PdfSharp.Pdf.IO
                 for (int idx = 0; idx < count2; idx++)
                 {
                     PdfReference iref = irefs2[idx];
+                    //Console.WriteLine(idx);
                     PdfCrossReferenceStream xrefStream = iref.Value as PdfCrossReferenceStream;
                     if (xrefStream != null)
                     {
@@ -409,6 +410,12 @@ namespace PdfSharp.Pdf.IO
                 for(int idx = 0; idx < count2; idx++)
                 {
                     PdfReference iref = irefs2[idx];
+                    //try {
+                    //    var test = iref.Value as PdfCrossReferenceStream;
+                    //} catch(Exception e) {
+                    //    continue;
+                    //}
+
                     PdfCrossReferenceStream xrefStream = iref.Value as PdfCrossReferenceStream;
                     if (xrefStream != null)
                     {
@@ -459,9 +466,11 @@ namespace PdfSharp.Pdf.IO
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine(ex.Message);
-                            // 4STLA rethrow exception to notify caller.
-                            throw;
+                            //Debug.WriteLine(ex.Message);
+                            //// 4STLA rethrow exception to notify caller.
+                            //throw;
+
+                            continue;
                         }
                     }
                     else

@@ -296,7 +296,10 @@ namespace PdfSharp.Pdf.IO
                     if(bytes.Length != 0) {
                         byte[] key = new byte[securityHandler._keySize];
                         Array.Copy(securityHandler._key, 0, key, 0, securityHandler._keySize);
-                        bytes = securityHandler.Decrypt(bytes, key);
+                        if(_document.revision == 1)
+                            bytes = securityHandler.Decrypt(bytes, key);
+                        else if(_document.revision == 3 || _document.revision == 4)
+                            bytes = securityHandler.EncryptBytes(bytes);
                     }
                 }
                
